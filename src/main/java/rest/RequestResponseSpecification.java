@@ -16,28 +16,53 @@ import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.builder.ResponseSpecBuilder;
+import io.restassured.filter.log.LogDetail;
 import io.restassured.http.Method;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import io.restassured.specification.RequestSpecification;
+import io.restassured.specification.ResponseSpecification;
 
 
-public class UserJsonTest {
+public class RequestResponseSpecification {
+	
+	public static RequestSpecification reqSpec;
+	public static ResponseSpecification resSpec;
+	
+	@BeforeClass
+	public static void init(){
+		RestAssured.baseURI = "https://restapi.wcaquino.me";
+		RestAssured.port = 443;
+//		RestAssured.basePath = "";
+		
+		RequestSpecBuilder reqBuilder = new RequestSpecBuilder();
+		reqBuilder.log(LogDetail.ALL);
+		reqSpec  = reqBuilder.build();
+		
+		ResponseSpecBuilder resBuilder = new ResponseSpecBuilder();
+		resBuilder.expectStatusCode(200);
+		resSpec  = resBuilder.build();
+		
+		RestAssured.requestSpecification = reqSpec;
+		RestAssured.responseSpecification = resSpec;
+	}
 	
 	@Test
 	public void deveVerificarPrimeiroNivel() {
+		
 		given()
 		.when()
-			.get("https://restapi.wcaquino.me/users/1")
+			.get("/users/1")
 		.then()
-			.statusCode(200)
 			.body(is(not(nullValue())))
 			.body("id", is(1))
 			.body("name",containsString("Silva"))
@@ -66,9 +91,8 @@ public class UserJsonTest {
 	public void deveVerificarSegundoNivel() {
 		given()
 		.when()
-			.get("https://restapi.wcaquino.me/users/2")
+			.get("/users/2")
 		.then()
-			.statusCode(200)
 			.body(is(not(nullValue())))
 			.body("name",containsString("Joaquina"))
 			.body("endereco.rua",is("Rua dos bobos"))
@@ -78,10 +102,11 @@ public class UserJsonTest {
 	@Test
 	public void deveVerificarLista() {
 		given()
+			.spec(reqSpec)
 		.when()
-			.get("https://restapi.wcaquino.me/users/3")
+			.get("/users/3")
 		.then()
-			.statusCode(200)
+			.spec(resSpec)
 			.body(is(not(nullValue())))
 			.body("name",containsString("Ana"))
 			.body("filhos",hasSize(2))
@@ -93,26 +118,15 @@ public class UserJsonTest {
 		;
 	}
 	
-	@Test
-	public void deveRetornarErrorUsuarioInexistente() {
-		given()
-		.when()
-			.get("https://restapi.wcaquino.me/users/4")
-		.then()
-			.statusCode(404)
-			.body(is(not(nullValue())))
-			.body("error",is("Usuário inexistente"))
-		;
-	}
 	
 	@SuppressWarnings("unchecked")
 	@Test
 	public void deveVerificarListaRaiz() {
 		given()
+			.spec(reqSpec)
 		.when()
-			.get("https://restapi.wcaquino.me/users")
+			.get("/users")
 		.then()
-			.statusCode(200)
 			.body(is(not(nullValue())))
 			.body("$", hasSize(3))
 			.body("name", hasItems("João da Silva", "Maria Joaquina", "Ana Júlia"))
@@ -126,9 +140,8 @@ public class UserJsonTest {
 	public void deveRealizarVerificacoesAvancadas() {
 		given()
 		.when()
-			.get("https://restapi.wcaquino.me/users")
+			.get("/users")
 		.then()
-			.statusCode(200)
 			.body(is(not(nullValue())))
 			.body("$", hasSize(3))
 			.body("age.findAll{it <= 25}.size()",is(2))
@@ -148,21 +161,4 @@ public class UserJsonTest {
 		;
 	}
 	
-	@Test
-	public void devoUnirJsonPathJava() {
-		ArrayList<String> names = 
-		given()
-		.when()
-			.get("https://restapi.wcaquino.me/users")
-		.then()
-			.statusCode(200)
-			.body(is(not(nullValue())))
-			.extract().path("name.findAll{it.startsWith('Maria')}")
-		;
-		assertEquals(1, names.size());
-		assertTrue(names.get(0).equalsIgnoreCase("mAria Joaquiina"));
-		assertEquals(names.get(0).toUpperCase(), "maria joaquina".toUpperCase());
-	}
-
-
 }

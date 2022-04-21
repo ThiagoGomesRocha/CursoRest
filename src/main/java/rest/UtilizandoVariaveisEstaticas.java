@@ -7,19 +7,28 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import io.restassured.RestAssured;
 import io.restassured.internal.path.xml.NodeImpl;
 
-
-
-public class UserXmlTest {
+public class UtilizandoVariaveisEstaticas {
+	
+	@BeforeClass
+	public static void init(){
+		RestAssured.baseURI = "https://restapi.wcaquino.me";
+		RestAssured.port = 443;
+//		RestAssured.basePath = "";
+	}
 	
 	@Test
 	public void deveTrabalharComXml() {
+		
 		given()
+			.log().all()
 		.when()
-			.get("https://restapi.wcaquino.me/usersXML/3")
+			.get("/usersXML/3")
 		.then()
 			.statusCode(200)
 			.body(is(not(nullValue())))
@@ -36,6 +45,7 @@ public class UserXmlTest {
 	@Test
 	public void devePassaroNoRaiz() {
 		given()
+		.log().all()
 		.when()
 			.get("https://restapi.wcaquino.me/usersXML/3")
 		.then()
@@ -60,8 +70,9 @@ public class UserXmlTest {
 	@Test
 	public void deveFazerPesquisaAcanvacaComXml() {
 		given()
+		.log().all()
 		.when()
-			.get("https://restapi.wcaquino.me/usersXML")
+			.get("/usersXML")
 		.then()
 			.statusCode(200)
 			.body(is(not(nullValue())))
@@ -82,9 +93,9 @@ public class UserXmlTest {
 	
 	@Test
 	public void deveFazerPesquisaAcanvacaComXmlEJava() {
-		String name = given()
+		String name = given().log().all()
 		.when()
-			.get("https://restapi.wcaquino.me/usersXML")
+			.get("/usersXML")
 		.then()
 			.statusCode(200)
 			.body(is(not(nullValue())))
@@ -101,7 +112,7 @@ public class UserXmlTest {
 	
 	@Test
 	public void deveFazerPesquisaAcanvacaComXmlEJava2() {
-		ArrayList<String> names = given()
+		ArrayList<String> names = given().log().all()
 		.when()
 			.get("https://restapi.wcaquino.me/usersXML")
 		.then()
@@ -123,7 +134,7 @@ public class UserXmlTest {
 	
 	@Test
 	public void deveFazerPesquisaAcanvacaComXmlEJava3() {
-		ArrayList<NodeImpl> names = given()
+		ArrayList<NodeImpl> names = given().log().all()
 		.when()
 			.get("https://restapi.wcaquino.me/usersXML")
 		.then()
@@ -146,8 +157,9 @@ public class UserXmlTest {
 	@Test
 	public void deveFazerPesquisaAcanvacaComXpath() {
 		given()
+			.log().all()
 		.when()
-			.get("https://restapi.wcaquino.me/usersXML")
+			.get("/usersXML")
 		.then()
 			.statusCode(200)
 			.body(is(not(nullValue())))
