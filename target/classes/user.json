@@ -1,0 +1,46 @@
+{
+	"definitions": {},
+	"$schema": "http://json-schema.org/draft-07/schema#", 
+	"$id": "https://example.com/object1652476133.json", 
+	"title": "Root", 
+	"type": "array",
+	"default": [],
+	"items":{
+		"$id": "#root/items", 
+		"title": "Items", 
+		"type": "object",
+		"required": [
+			"id",
+			"name",
+			"age"
+		],
+		"properties": {
+			"id": {
+				"$id": "#root/items/id", 
+				"title": "Id", 
+				"type": "integer",
+				"default": 0
+			},
+			"name": {
+				"$id": "#root/items/name", 
+				"title": "Name", 
+				"type": "string",
+				"default": "",
+				"pattern": "^.*$"
+			},
+			"age": {
+				"$id": "#root/items/age", 
+				"title": "Age", 
+				"type": "integer",
+				"default": 0
+			},
+			"salary": {
+				"$id": "#root/items/salary", 
+				"title": "Salary", 
+				"type": "number",
+				"default": 0.0
+			}
+		}
+	}
+
+}
